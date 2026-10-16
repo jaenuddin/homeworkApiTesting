@@ -1,0 +1,104 @@
+{
+  "info": {
+    "_postman_id": "a8c7f801-6346-4d0b-87ec-0aa784f845a7",
+    "name": "Muhammad Jaenuddin - Batch 13",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "17535504"
+  },
+  "item": [
+    {
+      "name": "Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "var responseBody = null;\ntry {\n    responseBody = pm.response.json();\n} catch (error) {\n    // Tes di bawah akan melaporkan jika body bukan JSON.\n}\n\npm.test(\"Login returns HTTP 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Login response is valid JSON\", function () {\n    pm.expect(responseBody).to.be.an(\"object\");\n});\n\npm.test(\"Login response contains successful status, token, and message\", function () {\n    pm.expect(responseBody && responseBody.status).to.eql(200);\n    pm.expect(responseBody && responseBody.token).to.be.a(\"string\").and.not.empty;\n    pm.expect(responseBody && responseBody.message).to.eql(\"Login successful\");\n});\n\nif (responseBody && typeof responseBody.token === \"string\" && responseBody.token.trim() !== \"\") {\n    pm.collectionVariables.set(\"token\", responseBody.token);\n} else {\n    pm.collectionVariables.unset(\"token\");\n}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"password\": \"admin\",\n    \"username\":\"admin\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://belajar-bareng.onrender.com/api/login",
+          "protocol": "https",
+          "host": [
+            "belajar-bareng",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "api",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Users",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "var responseBody = null;\ntry {\n    responseBody = pm.response.json();\n} catch (error) {\n    // Tes di bawah akan melaporkan jika body bukan JSON.\n}\n\npm.test(\"GET users returns HTTP 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"GET users response uses JSON content type\", function () {\n    const contentType = pm.response.headers.get(\"Content-Type\") || \"\";\n    pm.expect(contentType).to.match(/application\\/json/i);\n});\n\npm.test(\"GET users response has status 200 and a users array\", function () {\n    pm.expect(responseBody).to.be.an(\"object\");\n    pm.expect(responseBody && responseBody.status).to.eql(200);\n    pm.expect(responseBody && responseBody.users).to.be.an(\"array\");\n});\n\npm.test(\"Each user has the expected fields and data types\", function () {\n    pm.expect(responseBody && responseBody.users).to.be.an(\"array\");\n    (responseBody.users || []).forEach(function (user) {\n        pm.expect(user).to.be.an(\"object\");\n        pm.expect(user.userId).to.be.a(\"string\").and.not.empty;\n        pm.expect(user.username).to.be.a(\"string\").and.not.empty;\n        pm.expect(user.age).to.be.a(\"number\");\n    });\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://belajar-bareng.onrender.com/api/users",
+          "protocol": "https",
+          "host": [
+            "belajar-bareng",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "api",
+            "users"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "token",
+      "value": ""
+    }
+  ]
+}
